@@ -21,15 +21,17 @@ jobs:
         with:
           node-version: "18"
 
-      - name: Install packages
+      - name: Install dependencies
         run: npm install
+        working-directory: ./calc-frontend
 
       - name: Build App
         run: npm run build
+        working-directory: ./calc-frontend
 
       - name: Run Tests with Coverage
-        run: |
-          npm test -- --coverage --watchAll=false || true
+        run: npm test -- --coverage --watchAll=false || true
+        working-directory: ./calc-frontend
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v3
@@ -39,6 +41,6 @@ jobs:
         with:
           args: >
             -Dsonar.projectKey=calc-frontend
-            -Dsonar.sources=src
+            -Dsonar.sources=calc-frontend/src
             -Dsonar.exclusions=**/*.test.js,**/*.test.jsx,node_modules/**
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.javascript.lcov.reportPaths=calc-frontend/coverage/lcov.info
