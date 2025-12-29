@@ -2,6 +2,13 @@ name: Build
 
 on:
   workflow_call:
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      ECR_REPO:
+        required: true
     outputs:
       image_tag:
         value: ${{ jobs.build.outputs.image_tag }}
