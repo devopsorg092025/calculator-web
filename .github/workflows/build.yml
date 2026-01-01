@@ -11,6 +11,9 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
+    outputs:
+      image_uri: ${{ steps.set-image-uri.outputs.IMAGE_URI }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -31,7 +34,11 @@ jobs:
           IMAGE_URI="${{ secrets.ECR_REGISTRY }}/my-app:${{ github.sha }}"
           docker build -t $IMAGE_URI .
           echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
+          echo "::set-output name=IMAGE_URI::$IMAGE_URI"
 
       - name: Push Docker image to ECR
-        run: |
-          docker push $IMAGE_URI
+        run: docker push $IMAGE_URI
+
+      - name: Set output for calling workflow
+        id: set-image-uri
+        run: echo "IMAGE_URI=${{ env.IMAGE_URI }}" >> $GITHUB_OUTPUT
