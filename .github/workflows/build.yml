@@ -23,12 +23,6 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Generate image tag
-        id: tag
-        run: |
-          TAG=$(git rev-parse --short HEAD)
-          echo "image_tag=$TAG" >> $GITHUB_OUTPUT
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
