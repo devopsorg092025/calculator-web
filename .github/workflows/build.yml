@@ -15,7 +15,7 @@ on:
 
 jobs:
   build:
-    runs-on: [self-hosted] [Windows]
+    runs-on: ubuntu-latest
     outputs:
       image_tag: ${{ steps.tag.outputs.image_tag }}
 
