@@ -41,8 +41,8 @@ jobs:
 
       - name: Build and push image
         run: |
-          docker build -t my-app:${{ steps.tag.outputs.image_tag }} .
-          docker tag my-app:${{ steps.tag.outputs.image_tag }} \
-            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-south-1.amazonaws.com/my-app:${{ steps.tag.outputs.image_tag }}
-          docker push \
-            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-south-1.amazonaws.com/my-app:${{ steps.tag.outputs.image_tag }}
+          REPO=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-south-1.amazonaws.com/my-app
+          IMAGE_TAG=${{ steps.tag.outputs.image_tag }}
+          docker build -t my-app:$IMAGE_TAG .
+          docker tag my-app:$IMAGE_TAG $REPO:$IMAGE_TAG
+          docker push $REPO:$IMAGE_TAG
