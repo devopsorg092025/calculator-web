@@ -8,13 +8,13 @@ on:
 
 jobs:
   build:
-    uses: ./build.yml
+    uses: ./build.yml@main      # <-- add @main (branch) or @<sha>
     with:
       aws_region: ap-south-1
 
   deploy_dev:
     needs: build
-    uses: ./deploy.yml
+    uses: ./deploy.yml@main     # <-- add @main
     with:
       aws_region: ap-south-1
       cluster_name: calculator-eks-cluster
@@ -22,7 +22,7 @@ jobs:
 
   deploy_qa:
     needs: build
-    uses: ./deploy.yml
+    uses: ./deploy.yml@main     # <-- add @main
     with:
       aws_region: ap-south-1
       cluster_name: calculator-eks-cluster
