@@ -31,16 +31,16 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          aws-region: ap-south-1
 
       - name: Update kubeconfig
         run: |
           aws eks update-kubeconfig \
-            --region us-east-1 \
+            --region ap-south-1 \
             --name my-eks-cluster
 
       - name: Deploy application
         run: |
           kubectl set image deployment/my-app \
-            my-app=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/my-app:${{ inputs.image_tag }} \
+            my-app=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-south-1.amazonaws.com/my-app:${{ inputs.image_tag }} \
             -n ${{ inputs.environment }}
