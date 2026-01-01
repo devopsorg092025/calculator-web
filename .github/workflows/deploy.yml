@@ -3,19 +3,17 @@ name: Deploy to EKS
 on:
   workflow_call:
     inputs:
-      aws_region:
+      environment:
         required: true
         type: string
-      cluster_name:
-        required: true
-        type: string
-      namespace:
+      image_uri:
         required: true
         type: string
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -25,20 +23,14 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ inputs.aws_region }}
+          aws-region: ap-south-1
 
-      - name: Update kubeconfig for EKS
+      - name: Configure kubectl
         run: |
-          aws eks update-kubeconfig --region ${{ inputs.aws_region }} --name ${{ inputs.cluster_name }}
+          aws eks update-kubeconfig --name my-eks-cluster --region us-east-1
 
       - name: Deploy to EKS
         run: |
-          IMAGE_URI="${{ secrets.ECR_REPO }}:latest"
-          NAMESPACE=${{ inputs.namespace }}
-          
-          # Create namespace if it doesn't exist
-          kubectl get namespace $NAMESPACE || kubectl create namespace $NAMESPACE
-
-          # Apply deployment manifests
-          kubectl -n $NAMESPACE set image deployment/calculator-deployment calculator=$IMAGE_URI --record
-          kubectl -n $NAMESPACE rollout status deployment/calculator-deployment
+          # Replace image in your k8s deployment manifest
+          kubectl set image deployment/my-app my-app=${{ inputs.image_uri }} -n ${{ inputs.environment }}
+          kubectl rollout status deployment/my-app -n ${{ inputs.environment }}

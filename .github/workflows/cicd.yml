@@ -4,26 +4,31 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
+      - develop
 
 jobs:
-  build:
-    uses: ./build.yml@main      # <-- add @main (branch) or @<sha>
+  dev:
+    uses: ./.github/workflows/build.yml
     with:
-      aws_region: ap-south-1
+      environment: dev
 
-  deploy_dev:
-    needs: build
-    uses: ./deploy.yml@main     # <-- add @main
+  deploy-dev:
+    needs: dev
+    uses: ./.github/workflows/deploy.yml
     with:
-      aws_region: ap-south-1
-      cluster_name: calculator-eks-cluster
-      namespace: dev
+      environment: dev
+      image_uri: ${{ needs.dev.outputs.IMAGE_URI }}
 
-  deploy_qa:
-    needs: build
-    uses: ./deploy.yml@main     # <-- add @main
+  qa:
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/build.yml
     with:
-      aws_region: ap-south-1
-      cluster_name: calculator-eks-cluster
-      namespace: qa
+      environment: qa
+
+  deploy-qa:
+    if: github.ref == 'refs/heads/main'
+    needs: qa
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: qa
+      image_uri: ${{ needs.qa.outputs.IMAGE_URI }}
