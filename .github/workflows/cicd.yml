@@ -19,12 +19,6 @@ jobs:
       environment: dev
       image_uri: ${{ needs.dev.outputs.IMAGE_URI }}
 
-  qa:
-    if: github.ref == 'refs/heads/main'
-    uses: ./.github/workflows/build.yml
-    with:
-      environment: qa
-
   deploy-qa:
     if: github.ref == 'refs/heads/main'
     needs: qa
