@@ -19,13 +19,22 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      # ---- Kubernetes credentials (example) ----
-      - name: Set kubeconfig
-        run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+      # ---- AWS Auth ----
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Deploy to Kubernetes
+      # ---- Update kubeconfig ----
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig \
+            --cluster-name ${{ secrets.EKS_CLUSTER_NAME }} \
+            --region ${{ secrets.AWS_REGION }}
+
+      # ---- Deploy image ----
+      - name: Deploy to EKS
         run: |
           kubectl set image deployment/my-app \
             my-app=${{ inputs.image_uri }} \
