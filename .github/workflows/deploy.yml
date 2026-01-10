@@ -1,0 +1,35 @@
+name: Deploy Application
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      image_uri:
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # ---- Kubernetes credentials (example) ----
+      - name: Set kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl set image deployment/my-app \
+            my-app=${{ inputs.image_uri }} \
+            -n ${{ inputs.environment }}
+
+          kubectl rollout status deployment/my-app \
+            -n ${{ inputs.environment }}
